@@ -1,0 +1,210 @@
+#root {
+  /* Primary Colors */
+  --primary-color: #5f5de4;
+  --primary-color-light: #646cff;
+  --primary-color-dark: #3f3cbb;
+  --primary-color-darker: #3730a3;
+  --primary-color-darkest: #1e1a78;
+  --primary-color-lightest: #e0e7ff; /* Removed duplicate */
+
+  /* Variations */
+  --primary-color-lighter: #e9efff;
+  --primary-color-main: #6f44f2;
+  --primary-color-variant: #f98f32;
+  --primary-text-color-variant: #17a8ff;
+
+  /* Accent and Text Colors */
+  --accent-color: #00b4ff;
+  --primary-text-color: #0071e3;
+  --heading-text-color: #333;
+  --paragraph-text-color: #454545;
+  --secondary-text-color: #666;
+
+  /* Background Colors */
+  --background-color: #f9f9f9;
+  --background-color-light: #fafbfc;
+
+  --border-color: #eaeaea;
+  --border-color2: #c3c3c3;
+  --highlight-color: #edf5ff;
+  --border-accent-color: #00b4ff;
+  .bord {
+    border-color: var(--border-color) !important;
+  }
+  .bordr {
+    border-color: var(--border-color2) !important;
+  }
+  .bord-color {
+    border-color: var(--border-accent-color) !important;
+  }
+  .bg-color-light {
+    background-color: var(--background-color-light) !important;
+  }
+  .bg-color-light2 {
+    background-color: var(--primary-color-lighter) !important;
+  }
+  .bg-light {
+    background-color: var(--highlight-color) !important;
+  }
+  .btn-highlight:hover {
+    background-color: var(--highlight-color) !important;
+  }
+  .txt-primary {
+    background-color: var(--primary-color) !important;
+    font-size: 14px;
+    color: var(--paragraph-text-color);
+  }
+  .txt {
+    font-size: 13px;
+    color: var(--paragraph-text-color);
+  }
+  .c-shdw {
+    box-shadow: rgba(14, 63, 126, 0.06) 0px 0px 0px 1px,
+      rgba(42, 51, 70, 0.03) 0px 1px 1px -0.5px,
+      rgba(42, 51, 70, 0.04) 0px 2px 2px -1px,
+      rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px,
+      rgba(42, 51, 70, 0.03) 0px 3px 3px -1.5px;
+    /* rgba(42, 51, 70, 0.03) 0px 2px 2px -2px; */
+    /* rgba(42, 51, 70, 0.03) 0px 5px 5px -2px; */
+  }
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  /* background-color: var(--background-color); */
+  color: var(--paragraph-text-color);
+}
+h1 {
+  color: var(--heading-text-color);
+}
+h2 {
+  color: var(--heading-text-color);
+}
+h3 {
+  color: var(--heading-text-color);
+}
+h4 {
+  color: var(--heading-text-color);
+}
+h5 {
+  color: var(--heading-text-color);
+}
+h6 {
+  color: var(--heading-text-color);
+}
+p {
+  color: var(--paragraph-text-color);
+}
+/* 
+a {
+  color: var(--primary-text-color);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+} */
+/* a:visited {
+  color: var(--primary-text-color);
+} */
+/* a:hover {
+  color: var(--accent-color);
+} */
+/* a:active {
+  color: var(--accent-color);
+} */
+a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+a:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+a:focus-visible:not(:focus) {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.font-small {
+  font-size: 0.8em;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.font-regular {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.font-large {
+  font-size: 1.2em;
+  line-height: 1.5;
+}
+.font-xlarge {
+  font-size: 1.5em;
+  line-height: 1.5;
+}
+.font-xxlarge {
+  font-size: 2em;
+  line-height: 1.5;
+}
+
+/* CUSTOM STYLES CSS */
+.layout {
+  background-color: var(--background-color-light);
+}
+
+.topbar {
+  background-color: #fff;
+}
+
+.logo {
+  color: var(--primary-color-darkest);
+}
+
+.stats-1 {
+  background: var(--primary-color-main);
+}
+.stats-2 {
+  background: var(--primary-text-color-variant);
+}
+.stats-3 {
+  background: var(--primary-color-variant);
+}
+
+.c-x {
+  cursor: not-allowed !important;
+  background: #ecf4f4 !important;
+  pointer-events: none;
+  background-color: unset;
+  cursor: default;
+}

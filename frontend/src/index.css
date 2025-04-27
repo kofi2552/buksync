@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Source Code Pro", "Roboto", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  @apply h-full bg-neutral-50 text-neutral-900;
+}
+
+body {
+  @apply m-0 min-h-screen overflow-x-hidden;
+}
+
+#root {
+  @apply h-full;
+}
+
+/* Apple-inspired transition styles */
+.transition-apple {
+  @apply transition duration-300 ease-in-out;
+}
+
+/* Glass effect elements */
+.glass-panel {
+  @apply bg-white bg-opacity-70 backdrop-blur-lg rounded-xl border border-white border-opacity-20 shadow-apple;
+}
+
+/* Elegant scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 rounded-full hover:bg-neutral-400 transition-all;
+}
+
+/* Form elements styling */
+input,
+select,
+textarea {
+  @apply px-3 py-2 rounded-lg border border-neutral-200 focus:border-primary-500 
+         focus:ring-2 focus:ring-primary-500 focus:ring-opacity-30 focus:outline-none
+         transition-all duration-200 bg-white;
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-full font-medium transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-opacity-50;
+}
+
+.btn-primary {
+  @apply bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-500;
+}
+
+.btn-secondary {
+  @apply bg-secondary-500 hover:bg-secondary-600 text-white focus:ring-secondary-500;
+}
+
+.btn-accent {
+  @apply bg-accent-500 hover:bg-accent-600 text-white focus:ring-accent-500;
+}
+
+.btn-outline {
+  @apply border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 focus:ring-neutral-500;
+}
+
+/* Calendar styling */
+.react-calendar {
+  @apply w-full border-none rounded-xl overflow-hidden shadow-apple p-4 bg-white;
+}
+
+.react-calendar__tile {
+  @apply rounded-lg transition-all hover:bg-primary-50;
+}
+
+.react-calendar__tile--active {
+  @apply bg-primary-500 text-white hover:bg-primary-600;
+}
+
+.react-calendar__tile--now {
+  @apply bg-neutral-100;
+}
+
+/* Toast notifications */
+.toast {
+  @apply glass-panel px-4 py-3 max-w-md;
+}
+
+/* Card styling */
+.card {
+  @apply bg-white rounded-xl shadow-apple p-6 transition-all duration-300 hover:shadow-apple-md;
+}
+
+/* Navbar styling */
+.navbar {
+  @apply glass-panel sticky top-0 z-50 px-6 py-4 flex items-center justify-between;
+}

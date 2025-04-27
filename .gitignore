@@ -1,0 +1,10 @@
+node_modules
+node_modules/
+.env
+frontend/.env
+frontend/node_modules
+frontend/superbase
+frontend/superbase/
+frontend/src/lib/
+frontend/dist
+frontend/**/superbase/
