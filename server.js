@@ -18,9 +18,10 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 const allowedOrigins = [
+  "https://tudlin-api.onrender.com",
+  "https://buksync.onrender.com",
   "http://localhost:5173",
   "http://localhost:8000",
-  "https://your-app-name.onrender.com",
   "https://www.tudlin.com",
 ];
 
