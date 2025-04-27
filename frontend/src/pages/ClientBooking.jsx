@@ -51,6 +51,14 @@ export default function ClientBooking() {
 
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(selectedDate || today);
+  const [anonymousId, setAnonymousId] = useState("");
+  const [provideDetails, setProvideDetails] = useState(false);
+
+  const generateAnonymousId = () => {
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substr(2, 6);
+    return `anon_${timestamp}_${randomString}`;
+  };
 
   const {
     register,
@@ -97,8 +105,9 @@ export default function ClientBooking() {
         if (res.status === 200) {
           setBookingType({
             ...bookingTypeData,
-            host: user,
+            host: bookingTypeData.user,
           });
+
           setAvailabilityData(bookingTypeData.availability);
         } else {
           addToast(
@@ -122,6 +131,8 @@ export default function ClientBooking() {
 
     if (bookingTypeId) fetchBookingTypeDetails();
   }, [bookingTypeId, navigate]);
+
+  // console.log("booking type info: ", bookingType);
 
   const availability = Array.isArray(availabilityData) ? availabilityData : [];
   const availableDays = availability?.map((entry) => Number(entry.day));
@@ -269,6 +280,7 @@ export default function ClientBooking() {
 
   const handleTimeSelect = (time) => {
     setSelectedTime(time);
+    setAnonymousId(generateAnonymousId());
     setFormStep(3);
   };
 
@@ -279,7 +291,15 @@ export default function ClientBooking() {
   const onSubmit = async (data) => {
     if (!selectedDate || !selectedTime || !bookingType) return;
 
-    if (!user) {
+    const fakeUser = {
+      full_name: "Anonymous",
+      email: data.email,
+      _id: anonymousId,
+    };
+
+    const currentUser = user || fakeUser;
+
+    if (!user && !provideDetails) {
       // Save current location + form data in redirect state
       navigate("/auth/", {
         state: {
@@ -288,93 +308,101 @@ export default function ClientBooking() {
             selectedDate,
             selectedTime,
             clientInfo: {
-              name: data.name,
-              email: data.email,
-              notes: data.notes,
+              name: currentUser.name,
+              email: currentUser.email,
+              notes: data.notes || "Optional",
             },
             bookingTypeId,
           },
         },
       });
       return;
-    }
+    } else {
+      try {
+        setSubmitting(true);
 
-    try {
-      setSubmitting(true);
+        const bookingTime = selectedTime.time;
 
-      const bookingTime = selectedTime.time;
+        // Generate a Google Meet link
+        const meetResult = await generateMeetLink({
+          title: `${bookingType.name} with ${currentUser.full_name}`,
+          startTime: bookingTime,
+          endTime: addMinutes(bookingTime, bookingType.duration),
+          attendees: [
+            { email: bookingType.user.email }, // Host's email
+            { email: currentUser.email }, // Client's email
+          ],
+        });
 
-      // Generate a Google Meet link
-      const meetResult = await generateMeetLink({
-        title: `${bookingType.name} with ${data.name}`,
-        startTime: bookingTime,
-        endTime: addMinutes(bookingTime, bookingType.duration),
-        attendees: [
-          { email: bookingType.host.email }, // Host's email
-          { email: data.email }, // Client's email
-        ],
-      });
+        if (!meetResult.success) {
+          throw new Error("Failed to generate meeting link");
+        }
 
-      if (!meetResult.success) {
-        throw new Error("Failed to generate meeting link");
+        // Create the booking
+        const payload = {
+          user_id: bookingType.user._id,
+          booking_type_id: bookingTypeId,
+          booked_time: bookingTime.toISOString(),
+          client_name: currentUser.full_name,
+          client_email: currentUser.email,
+          notes: data.notes || "No Additional Info",
+          duration: bookingType.duration,
+          meet_link: meetResult.meetLink || null,
+          status: "pending",
+        };
+
+        if (user) {
+          payload.bookedBy = user._id;
+        } else {
+          payload.anonymousId = anonymousId;
+        }
+
+        const res = await bookingApi.post(
+          `/add/booking?user=${currentUser}`,
+          payload
+        );
+
+        console.log("booking data sent: ", res);
+
+        // Send confirmation emails
+        await sendBookingConfirmation({
+          hostName: bookingType.user.full_name,
+          hostEmail: bookingType.user.email,
+          clientName: currentUser.full_name,
+          clientEmail: currentUser.email,
+          bookingType: bookingType.name,
+          bookingTime: bookingTime,
+          duration: bookingType.duration,
+          meetLink: meetResult.meetLink,
+        });
+
+        // setSuccess(true);
+        setBookingDetails({
+          name: currentUser.full_name,
+          email: currentUser.email,
+          date: format(bookingTime, "MMMM d, yyyy"),
+          time: format(bookingTime, "h:mm a"),
+          duration: bookingType.duration,
+          meetLink: meetResult.meetLink,
+        });
+        if (res) {
+          setFormStep(4);
+          addToast("Booking has been made successfully", "success");
+        }
+      } catch (error) {
+        console.error("Error creating booking:", error.message);
+        const message =
+          error.response?.data?.message ||
+          "Failed to create booking. Please try again.";
+
+        addToast(message, "error");
+        navigate(location.pathname, { replace: true });
+        setFormStep(1);
+        setSelectedDate(null);
+        setSelectedTime(null);
+      } finally {
+        setSubmitting(false);
       }
-
-      // console.log("bookingtype: ", bookingType);
-
-      // Create the booking
-      const res = await bookingApi.post("/add/booking", {
-        user_id: bookingType.user._id,
-        bookedBy: user._id,
-        booking_type_id: bookingTypeId,
-        booked_time: bookingTime.toISOString(),
-        client_name: data.name,
-        client_email: data.email,
-        notes: data.notes,
-        duration: bookingType.duration,
-        meet_link: meetResult.meetLink || null,
-        status: "pending",
-      });
-
-      console.log("booking success: ", res);
-
-      // Send confirmation emails
-      await sendBookingConfirmation({
-        hostName: bookingType.host.full_name,
-        hostEmail: bookingType.host.email,
-        clientName: data.name,
-        clientEmail: data.email,
-        bookingType: bookingType.name,
-        bookingTime: bookingTime,
-        duration: bookingType.duration,
-        meetLink: meetResult.meetLink,
-      });
-
-      // setSuccess(true);
-      setBookingDetails({
-        name: data.name,
-        email: data.email,
-        date: format(bookingTime, "MMMM d, yyyy"),
-        time: format(bookingTime, "h:mm a"),
-        duration: bookingType.duration,
-        meetLink: meetResult.meetLink,
-      });
-      if (res) {
-        setFormStep(4);
-        addToast("Booking has been made successfully", "success");
-      }
-    } catch (error) {
-      console.error("Error creating booking:", error.message);
-      const message =
-        error.response?.data?.message ||
-        "Failed to create booking. Please try again.";
-
-      addToast(message, "error");
-      navigate(location.pathname, { replace: true });
-      setFormStep(1);
-      setSelectedDate(null);
-      setSelectedTime(null);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -424,9 +452,9 @@ export default function ClientBooking() {
 
   return (
     <div className="min-h-screen bg-color-light py-12 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto flex flex-col">
         <button
-          className="flex items-center btn btn-outline text-sm text-gray-400"
+          className="w-[120px] mx-auto flex items-center btn btn-outline text-sm text-gray-400 mb-6 sm:mx-0 sm:mb-3"
           onClick={() => (window.location.href = "/overview")}
         >
           <ChevronLeft className="w-4 h-4 text-gray-700" /> Dashboard
@@ -456,7 +484,7 @@ export default function ClientBooking() {
               {bookingType?.host?.full_name?.charAt(0) || "H"}
             </div>
             <span className="text-sm font-medium">
-              {bookingType?.host?.full_name || "Host"}
+              {bookingType?.host?.email || "Host"}
             </span>
           </div>
         </div>
@@ -497,7 +525,7 @@ export default function ClientBooking() {
                   <span className="mt-2 text-xs text-center text-gray-500">
                     {step === 1 && "Select Date"}
                     {step === 2 && "Choose Time"}
-                    {step === 3 && "Confirm Details"}
+                    {step === 3 && "Confirm"}
                     {step === 4 && "Done"}
                   </span>
 
@@ -524,7 +552,7 @@ export default function ClientBooking() {
         </div>
 
         {/* Form Steps */}
-        <div className="bg-white rounded-xl bord-color p-6 md:p-8">
+        <div className="bg-white rounded-xl bord-color px-1 py-4 md:p-8 sm:px-6">
           {/* Step 1: Select Date */}
           {formStep === 1 && (
             <motion.div
@@ -537,8 +565,8 @@ export default function ClientBooking() {
               <h2 className="text-xl font-semibold text-neutral-900 mb-6">
                 Select a Highlighted Day
               </h2>
-              <div className="w-full max-w-7xl mx-auto p-4 rounded-2xl shadow-sm bg-white mb-6">
-                <div className="w-full max-w-4xl mx-auto p-4 rounded-2xl border border-gray-200 mb-2 bg-white">
+              <div className="w-full max-w-full mx-auto p-0 rounded-2xl shadow-sm bg-white mb-6 sm:max-w-7xl sm:p-4">
+                <div className="w-full max-w-full mx-auto p-1 rounded-2xl border border-gray-200 mb-2 bg-white sm:max-w-4xl sm:p-4">
                   {/* Month and Year */}
                   <div className="flex justify-between items-center mb-4">
                     <button
@@ -570,7 +598,7 @@ export default function ClientBooking() {
                   </div>
 
                   {/* Calendar Grid */}
-                  <div className="grid grid-cols-7 auto-rows-fr bg-white gap-[1px] border border-gray-100 p-2  rounded-lg overflow-hidden">
+                  <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 auto-rows-fr bg-white gap-[1px] border border-gray-100 p-2  rounded-lg overflow-hidden">
                     {calendar.map((week, weekIndex) =>
                       week.map((date, dateIndex) => {
                         const isAvailable = availableDays.includes(
@@ -605,7 +633,7 @@ export default function ClientBooking() {
                               ${
                                 isDisabled
                                   ? "bg-gray-300 text-gray-600 opacity-50"
-                                  : "bg-blue-50"
+                                  : "bg-blue-50 available"
                               }
                               ${
                                 !isSameMonth(date, selectedDate || today)
@@ -615,13 +643,13 @@ export default function ClientBooking() {
                               ${isFuture ? " text-gray-600 opacity-40 c-x" : ""}
                               ${
                                 isAvailable && !isPast
-                                  ? "bg-blue-200 hover:bg-blue-300 hover:text-white transition cursor-pointer"
+                                  ? "available-fit hover:bg-blue-300 hover:text-white transition cursor-pointer"
                                   : "cursor-not-allowed"
                               }
                                 ${isSelected ? "bg-blue-200 text-gray" : ""}
                             `}
                           >
-                            <span className="font-medium text-sm pt-2">
+                            <span className="font-medium cal-days text-sm pt-2">
                               {format(date, "d")}
                             </span>
                           </div>
@@ -632,7 +660,7 @@ export default function ClientBooking() {
                 </div>
               </div>
 
-              <p className="text-sm text-neutral-600 mt-4">
+              <p className="text-sm text-neutral-600 sm:mt-4">
                 Select a date to see available time slots.
               </p>
             </motion.div>
@@ -686,7 +714,7 @@ export default function ClientBooking() {
 
               <div className="flex justify-between">
                 <button onClick={handlePrevStep} className="btn btn-outline">
-                  Back
+                  Go Back
                 </button>
               </div>
             </motion.div>
@@ -700,68 +728,110 @@ export default function ClientBooking() {
               animate="visible"
               variants={fadeIn}
             >
-              <h2 className="text-xl font-semibold text-neutral-900 mb-2">
-                Enter Your Details
-              </h2>
+              <div className="mb-12">
+                <h1 className="text-xl font-semibold text-blue-600 mb-2">
+                  Are you a registered user of BukSync?
+                </h1>
+                <p className="text-sm text-neutral-700">
+                  If you are not, you can still book this meeting anonymously by
+                  providing a few essential details. Your Email will be used to
+                  confirm if this booking was successful.
+                </p>
+              </div>
+
+              <div className="w-full flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+                  Personalize Booking
+                </h2>
+
+                {/* Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setProvideDetails((prev) => !prev)}
+                  className={`px-4 py-2 text-sm rounded-md border ${
+                    provideDetails
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-blue-500"
+                  } border-blue-500 hover:bg-blue-100 transition`}
+                >
+                  {provideDetails ? "I Have An Account" : "Anonymize"}
+                </button>
+              </div>
+
               <p className="text-neutral-600 mb-6">
                 {format(selectedDate, "EEEE, MMMM d, yyyy")} at{" "}
                 {selectedTime.formattedTime}
               </p>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-neutral-700 mb-1"
-                  >
-                    Your Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    className={`w-full ${
-                      errors.name ? "border-error-500 focus:ring-error-500" : ""
-                    }`}
-                    {...register("name", { required: "Name is required" })}
-                    placeholder="John Doe"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-error-600">
-                      {errors.name.message}
-                    </p>
-                  )}
-                </div>
+                {provideDetails && (
+                  <>
+                    <div className="text-xs text-gray-500">
+                      Booking as{" "}
+                      {
+                        <span className="font-semibold text-xs text-blue-600">
+                          {anonymousId}
+                        </span>
+                      }
+                    </div>
 
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-neutral-700 mb-1"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    className={`w-full ${
-                      errors.email
-                        ? "border-error-500 focus:ring-error-500"
-                        : ""
-                    }`}
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    placeholder="john@example.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-error-600">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
+                    {/* <div>
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-neutral-700 mb-1"
+                      >
+                        Your Name
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        className={`w-full ${
+                          errors.name
+                            ? "border-error-500 focus:ring-error-500"
+                            : ""
+                        }`}
+                        {...register("name", { required: "Name is required" })}
+                        placeholder="John Doe"
+                      />
+                      {errors.name && (
+                        <p className="mt-1 text-sm text-error-600">
+                          {errors.name.message}
+                        </p>
+                      )}
+                    </div> */}
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-neutral-700 mb-1"
+                      >
+                        Email Address (required)
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        className={`w-full ${
+                          errors.email
+                            ? "border-error-500 focus:ring-error-500"
+                            : ""
+                        }`}
+                        {...register("email", {
+                          required: "Email is required",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                            message: "Invalid email address",
+                          },
+                        })}
+                        placeholder="john@example.com"
+                      />
+                      {errors.email && (
+                        <p className="mt-1 text-sm text-error-600">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <label
@@ -785,7 +855,7 @@ export default function ClientBooking() {
                     onClick={handlePrevStep}
                     className="btn btn-outline"
                   >
-                    Back
+                    Go Back
                   </button>
 
                   <button
@@ -840,14 +910,18 @@ export default function ClientBooking() {
                 <div className="space-y-3">
                   <div className="flex">
                     <span className="w-5 text-neutral-500 mr-3">👤</span>
-                    <div>
-                      <p className="text-sm text-neutral-800">
-                        {bookingDetails?.name}
-                      </p>
-                      <p className="text-xs text-neutral-500">
-                        {bookingDetails?.email}
-                      </p>
-                    </div>
+                    {bookingDetails?.anonymous ? (
+                      <p className="text-xs text-neutral-500">Anonymous</p>
+                    ) : (
+                      <div>
+                        <p className="text-sm text-neutral-800">
+                          {bookingDetails?.name}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {bookingDetails?.email}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex">

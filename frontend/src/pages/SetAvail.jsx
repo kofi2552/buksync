@@ -158,8 +158,7 @@ export default function SetAvail() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl p-6 space-y-6"
-          // className="card"
+          className="bg-white rounded-2xl p-2 sm:p-6 space-y-6"
         >
           <div className="flex items-center justify-between border-b pt-2 pb-6">
             <h2 className="text-md sm:text-xl font-semibold text-neutral-900">
@@ -215,7 +214,7 @@ export default function SetAvail() {
           ) : availabilityData && Object.keys(availabilityData).length > 0 ? (
             <form
               onSubmit={handleSubmit(handleAvailabilityUpdate)}
-              className="max-w-2xl mx-auto bg-white rounded-2xl p-4 sm:p-6 space-y-6"
+              className="max-w-2xl mx-auto bg-white rounded-2xl p-2 sm:p-6 space-y-6"
             >
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Set Your Weekly Availability
@@ -329,7 +328,7 @@ export default function SetAvail() {
           ) : showForm ? (
             <form
               onSubmit={handleSubmit(handleAvailabilityUpdate)}
-              className="max-w-2xl mx-auto bg-white rounded-2xl p-4 sm:p-6 space-y-6"
+              className="max-w-2xl mx-auto bg-white rounded-2xl p-2 sm:p-6 space-y-6"
             >
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Set Your Weekly Availability
@@ -441,7 +440,7 @@ export default function SetAvail() {
               </div>
             </form>
           ) : (
-            <div className="max-w-xl mx-auto text-center mt-20 p-6 bg-white shadow rounded-xl">
+            <div className="max-w-xl mx-auto text-center mt-20 p-4 sm:p-6 bg-white shadow rounded-xl">
               <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                 No Availability Set
               </h2>

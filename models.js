@@ -53,7 +53,13 @@ export const BookingSchema = new mongoose.Schema(
   {
     bookingType: { type: mongoose.Schema.Types.ObjectId, ref: "BookingType" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    bookedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    anonymousId: {
+      type: String,
+    },
     client_name: String,
     client_email: String,
     status: {

@@ -201,10 +201,28 @@ a:focus-visible:not(:focus) {
   background: var(--primary-color-variant);
 }
 
+.cal-days {
+  font-weight: 600 !important;
+}
+
 .c-x {
   cursor: not-allowed !important;
   background: #ecf4f4 !important;
   pointer-events: none;
   background-color: unset;
   cursor: default;
+}
+
+.available {
+  background: #add8e6 !important;
+  color: #005b8c !important;
+  /* opacity: 1 !important; */
+}
+.available-fit {
+  color: white !important;
+  background: #6495ed !important;
+}
+.available-fit:hover {
+  color: white !important;
+  background: #2a75ff !important;
 }

@@ -106,6 +106,10 @@ export default function Dashboard() {
     addToast("Booking link copied to clipboard", "success");
   };
 
+  const VisitMyBookings = () => {
+    window.location.href = "/bookings";
+  };
+
   // Stat cards data
   const statCards = [
     {
@@ -113,6 +117,7 @@ export default function Dashboard() {
       value: stats.totalBookings,
       color: "stats-1",
       icon: <CalendarDays className="h-6 w-6 text-white" />,
+      onClick: VisitMyBookings,
     },
     {
       title: "Today's Bookings",
@@ -177,7 +182,10 @@ export default function Dashboard() {
           <motion.div
             key={index}
             variants={itemVariants}
-            className="rounded-xl c-shdw bg-white p-6 flex items-center"
+            onClick={stat.onClick}
+            className={`rounded-xl c-shdw bg-white p-6 flex items-center transition hover:shadow-lg ${
+              stat.onClick ? "cursor-pointer hover:bg-gray-50" : ""
+            }`}
           >
             <div className={`${stat.color} p-3 rounded-full  mr-4`}>
               {stat.icon}

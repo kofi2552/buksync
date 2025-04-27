@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
+import useAuthStore from "../store/useAuthStore";
 
 export default function Register() {
-  const { signUp } = useAuth();
+  const { signIn } = useAuthStore();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +24,7 @@ export default function Register() {
     try {
       setIsLoading(true);
       const { fullName, email, password } = data;
-      const result = await signUp(email, password, fullName);
+      const result = await signIn(email, password, fullName);
 
       if (result.success) {
         addToast("Account created successfully", "success");

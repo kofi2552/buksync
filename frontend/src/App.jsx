@@ -15,6 +15,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const ClientBooking = lazy(() => import("./pages/ClientBooking"));
 const SetAvail = lazy(() => import("./pages/SetAvail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const MyBookings = lazy(() => import("./pages/MyBookings"));
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -34,7 +35,7 @@ function App() {
 
   // console.log("User in app:", user);
   // console.log("Loading in app:", loading);
-  console.log("Location in app:", location.pathname);
+  //console.log("Location in app:", location.pathname);
 
   // Scroll to top on route change
   useEffect(() => {
@@ -76,6 +77,7 @@ function App() {
         >
           <Route index element={<Navigate to="/overview" replace />} />
           <Route path="overview" element={<Dashboard />} />
+          <Route path="bookings" element={<MyBookings />} />
           <Route path="calendar" element={<Calendar />} />
           <Route path="booking-types" element={<BookingTypes />} />
           <Route path="availability" element={<SetAvail />} />

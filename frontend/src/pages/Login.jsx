@@ -39,6 +39,7 @@ export default function Login() {
         const { email, username } = result.data.user;
         const token = result.data.token;
         const role = "host";
+
         await signIn(username, email, role, token);
 
         //console.log("Login successful:", result.data.user);

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import {
   format,
@@ -450,7 +451,27 @@ export default function Calendar() {
                     Notes
                   </h3>
                   <p className="text-sm text-neutral-600">
-                    {selectedBooking.notes}
+                    {selectedBooking.notes
+                      ? selectedBooking.notes
+                          .split(/(https?:\/\/[^\s]+)/g)
+                          .map((part, index) =>
+                            part.match(/https?:\/\/[^\s]+/) ? (
+                              <a
+                                key={index}
+                                href={part}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline"
+                              >
+                                {part}
+                              </a>
+                            ) : (
+                              <React.Fragment key={index}>
+                                {part}
+                              </React.Fragment>
+                            )
+                          )
+                      : "No notes provided."}
                   </p>
                 </div>
               )}

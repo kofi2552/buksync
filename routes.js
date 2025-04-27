@@ -36,15 +36,15 @@ router.post("/user/create", async (req, res) => {
 });
 
 // Create booking (public route)
-router.post("/booking", async (req, res) => {
+router.get("/bookings/all/:id", async (req, res) => {
   try {
-    const newBooking = new Booking(req.body);
-    await newBooking.save();
-    res.status(201).json(newBooking);
+    const { id } = req.params; // Fix here: extract id from params properly
+    const myBookings = await Booking.find({ user: id }); // Fix here: use await and correct field
+    res.status(200).json(myBookings); // 200 for success
   } catch (err) {
     res
       .status(400)
-      .json({ message: "Booking creation failed", error: err.message });
+      .json({ message: "Booking fetch failed", error: err.message });
   }
 });
 
@@ -192,7 +192,7 @@ router.get("/booking-type/:id", async (req, res) => {
   try {
     const bookingType = await BookingType.findById(req.params.id).populate(
       "user",
-      "email"
+      "email full_name"
     );
 
     if (!bookingType) return res.status(404).json({ message: "Not found" });
@@ -204,7 +204,11 @@ router.get("/booking-type/:id", async (req, res) => {
 
     res.json({
       ...bookingType.toObject(),
-      user: bookingType.user,
+      user: {
+        _id: bookingType.user._id,
+        email: bookingType.user.email,
+        full_name: bookingType.user.full_name,
+      },
       availability,
     });
   } catch (error) {
@@ -216,7 +220,7 @@ router.get("/booking-type/:id", async (req, res) => {
 router.get("/bookings/check-availability", async (req, res) => {
   const { bookingTypeId, date } = req.query;
 
-  console.log("BCK Booking data received:", req.query);
+  //console.log("BCK Booking data received:", req.query);
 
   if (!bookingTypeId || !date)
     return res.status(400).json({ message: "Missing parameters" });
@@ -242,12 +246,38 @@ router.get("/bookings/check-availability", async (req, res) => {
   }
 });
 
-// POST /api/bookings
+// DELETE /booking/:id
+router.delete("/delete-booking/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await Booking.findById(id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.status !== "cancelled") {
+      return res
+        .status(400)
+        .json({ message: "Only cancelled bookings can be deleted" });
+    }
+
+    await Booking.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Cancelled booking deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting booking:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 router.post("/add/booking", async (req, res) => {
   const {
     booking_type_id,
     user_id,
     bookedBy,
+    anonymousId,
     client_name,
     client_email,
     notes,
@@ -255,8 +285,6 @@ router.post("/add/booking", async (req, res) => {
     duration,
     meet_link,
   } = req.body;
-
-  //console.log("BCK add Booking data received:", req.body);
 
   if (
     !booking_type_id ||
@@ -269,7 +297,7 @@ router.post("/add/booking", async (req, res) => {
   }
 
   try {
-    // Check 1: If a booking with the same booking_type_id and booking_time already exists
+    // Check 1: If a booking with the same booking_type_id and booked_time already exists
     const existingBooking = await Booking.findOne({
       bookingType: booking_type_id,
       booked_time: booked_time,
@@ -282,14 +310,13 @@ router.post("/add/booking", async (req, res) => {
       });
     }
 
-    // Check 2: Prevent self-booking (user is booking themselves)
+    // Check 2: Prevent self-booking (only if bookedBy is present)
     const bookingType = await BookingType.findById(booking_type_id);
-
     if (!bookingType) {
       return res.status(404).json({ message: "Booking type not found." });
     }
 
-    if (bookingType.user.toString() === bookedBy) {
+    if (bookedBy && bookingType.user.toString() === bookedBy) {
       return res.status(400).json({
         message: "You cannot book yourself. Please select a different host.",
       });
@@ -299,8 +326,9 @@ router.post("/add/booking", async (req, res) => {
     const booking = new Booking({
       bookingType: booking_type_id,
       status: "pending",
-      user: user_id,
-      bookedBy,
+      user: user_id, // Host (always provided)
+      bookedBy: bookedBy || undefined, // If bookedBy exists
+      anonymousId: anonymousId || undefined, // If anonymousId exists
       duration,
       client_name,
       client_email,
@@ -309,10 +337,11 @@ router.post("/add/booking", async (req, res) => {
       meet_link: meet_link || "to be determined by host",
     });
 
-    console.log("BCK add Booking data received:", booking);
+    console.log("BCK saved Booking data: ", booking);
 
     await booking.save();
-    res.status(201).json({ message: "Booking created" });
+
+    res.status(201).json({ message: "Booking created", booking });
   } catch (error) {
     console.error("Booking creation error:", error);
     res.status(500).json({ message: "Server error", error });

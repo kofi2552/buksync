@@ -305,12 +305,12 @@ export default function Layout() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-72 w-[180px] bg-white border rounded-xl shadow-lg p-3 z-50"
+                  className="absolute right-0 mt-[22rem] w-[200px]  sm:w-[200px] bg-white border rounded-xl shadow-lg p-3 z-50"
                 >
-                  <div className="flex flex-col items-center text-center px-6 py-4">
+                  <div className="flex flex-col items-center text-center px-4 sm:px-6 py-4">
                     <UserCircle
-                      size={60}
-                      strokeWidth={1.5}
+                      size={80}
+                      strokeWidth={1}
                       className="text-gray-500 mb-2"
                     />
                     <p className="font-semibold text-lg text-gray-800">
