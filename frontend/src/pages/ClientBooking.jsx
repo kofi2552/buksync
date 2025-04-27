@@ -441,7 +441,7 @@ export default function ClientBooking() {
                 width={52}
                 className="mr-2"
               />{" "}
-              BookSync
+              BukSync
             </h1>
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">

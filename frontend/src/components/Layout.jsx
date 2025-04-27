@@ -106,7 +106,7 @@ export default function Layout() {
                 width={32}
                 className="mr-2"
               />{" "}
-              BookSync
+              BukSync
             </h1>
           </div>
           <nav className="flex-1 p-4 space-y-2 text-sm font-regular">
@@ -165,7 +165,7 @@ export default function Layout() {
                 width={32}
                 className="mr-2"
               />{" "}
-              BookSync
+              BukSync
             </h1>
           </div>
 

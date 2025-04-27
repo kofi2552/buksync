@@ -70,7 +70,7 @@ export default function Login() {
             className="block mb-2"
           />
           <h1 className="text-2xl font-semibold text-neutral-900">
-            Welcome to BookSync
+            Welcome to BukSync
           </h1>
           <p className="text-neutral-600 mt-2">Sign in to your account</p>
         </div>
