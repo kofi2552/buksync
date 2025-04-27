@@ -17,16 +17,24 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:8000",
+  "https://your-app-name.onrender.com",
+  "https://www.tudlin.com",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:8000",
-      "http://localhost:5173",
-      "https://tudlin-api.onrender.com",
-      "https://tudlin-client.onrender.com",
-      "https://www.tudlin.com",
-    ],
-    credentials: true,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow mobile apps/postman without origin
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // important for cookies / sessions
   })
 );
 

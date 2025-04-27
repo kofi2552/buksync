@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: buksync-app
+    env: node
+    plan: free
+    buildCommand: npm install --prefix frontend && npm run build && npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: MONGO_URI
+        value: mongodb+srv://dakwacephas:NknT89LLroDMEJZH@cluster0.520m9g3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - key: PORT
+        value: 10000
