@@ -162,14 +162,30 @@ export default function SetAvail() {
           // className="card"
         >
           <div className="flex items-center justify-between border-b pt-2 pb-6">
-            <h2 className="text-xl font-semibold text-neutral-900 ">
+            <h2 className="text-md sm:text-xl font-semibold text-neutral-900">
               Set Your Schedule
             </h2>
             <button
               onClick={handleClearSchedule}
-              className=" ml-4 px-6 py-2 border border-red-600 text-xs text-red-600 rounded-lg hover:bg-red-50 transition"
+              className="ml-4 px-4 py-2 border border-red-600 text-xs text-red-600 rounded-lg hover:bg-red-50 transition flex items-center gap-2"
             >
-              Clear My Schedule
+              {/* Trash Icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22"
+                />
+              </svg>
+              {/* Button Text - hidden on mobile */}
+              <span className="hidden sm:inline">Clear My Schedule</span>
             </button>
           </div>
 
@@ -199,13 +215,14 @@ export default function SetAvail() {
           ) : availabilityData && Object.keys(availabilityData).length > 0 ? (
             <form
               onSubmit={handleSubmit(handleAvailabilityUpdate)}
-              className="max-w-2xl mx-auto bg-white  rounded-2xl p-6 space-y-6"
+              className="max-w-2xl mx-auto bg-white rounded-2xl p-4 sm:p-6 space-y-6"
             >
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Set Your Weekly Availability
               </h2>
+
               {/* Toggle */}
-              <div className="flex items-center justify-between border-b pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-4 gap-2 sm:gap-0">
                 <span className="text-sm text-gray-700">
                   Use same hours for all selected days
                 </span>
@@ -224,13 +241,13 @@ export default function SetAvail() {
 
               {/* Global Time */}
               {useSameHours && (
-                <div className="flex gap-6 items-end">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-end">
                   <div>
                     <label className="text-sm text-gray-600">Start Time</label>
                     <input
                       type="time"
                       required
-                      className="block w-32 mt-1 border border-gray-300 rounded-md p-2"
+                      className="block w-full sm:w-32 mt-1 border border-gray-300 rounded-md p-2"
                       defaultValue={
                         availabilityData.workingHours?.start || "09:00"
                       }
@@ -242,7 +259,7 @@ export default function SetAvail() {
                     <input
                       type="time"
                       required
-                      className="block w-32 mt-1 border border-gray-300 rounded-md p-2"
+                      className="block w-full sm:w-32 mt-1 border border-gray-300 rounded-md p-2"
                       defaultValue={
                         availabilityData.workingHours?.end || "17:00"
                       }
@@ -271,23 +288,23 @@ export default function SetAvail() {
                     </label>
 
                     {!useSameHours && (
-                      <div className="flex gap-4">
-                        <div>
+                      <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <div className="flex-1 sm:flex-none">
                           <label className="text-sm text-gray-600">Start</label>
                           <input
                             type="time"
                             required
-                            className="block w-36 mt-1 border border-gray-300 rounded-md p-2"
+                            className="block w-full sm:w-36 mt-1 border border-gray-300 rounded-md p-2"
                             {...register(`days.${i}.startTime`)}
                             defaultValue="09:00"
                           />
                         </div>
-                        <div>
+                        <div className="flex-1 sm:flex-none">
                           <label className="text-sm text-gray-600">End</label>
                           <input
                             type="time"
                             required
-                            className="block w-36 mt-1 border border-gray-300 rounded-md p-2"
+                            className="block w-full sm:w-36 mt-1 border border-gray-300 rounded-md p-2"
                             {...register(`days.${i}.endTime`)}
                             defaultValue="17:00"
                           />
@@ -298,11 +315,12 @@ export default function SetAvail() {
                 ))}
               </div>
 
+              {/* Submit */}
               <div className="pt-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+                  className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
                 >
                   {isSubmitting ? "Saving..." : "Save / Update"}
                 </button>
@@ -311,13 +329,14 @@ export default function SetAvail() {
           ) : showForm ? (
             <form
               onSubmit={handleSubmit(handleAvailabilityUpdate)}
-              className="max-w-2xl mx-auto bg-white  rounded-2xl p-6 space-y-6"
+              className="max-w-2xl mx-auto bg-white rounded-2xl p-4 sm:p-6 space-y-6"
             >
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                 Set Your Weekly Availability
               </h2>
+
               {/* Toggle */}
-              <div className="flex items-center justify-between border-b pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-4 gap-2 sm:gap-0">
                 <span className="text-sm text-gray-700">
                   Use same hours for all selected days
                 </span>
@@ -336,13 +355,13 @@ export default function SetAvail() {
 
               {/* Global Time */}
               {useSameHours && (
-                <div className="flex gap-6 items-end">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-end">
                   <div>
                     <label className="text-sm text-gray-600">Start Time</label>
                     <input
                       type="time"
                       required
-                      className="block w-32 mt-1 border border-gray-300 rounded-md p-2"
+                      className="block w-full sm:w-32 mt-1 border border-gray-300 rounded-md p-2"
                       defaultValue={
                         availabilityData.workingHours?.start || "09:00"
                       }
@@ -354,7 +373,7 @@ export default function SetAvail() {
                     <input
                       type="time"
                       required
-                      className="block w-32 mt-1 border border-gray-300 rounded-md p-2"
+                      className="block w-full sm:w-32 mt-1 border border-gray-300 rounded-md p-2"
                       defaultValue={
                         availabilityData.workingHours?.end || "17:00"
                       }
@@ -383,23 +402,23 @@ export default function SetAvail() {
                     </label>
 
                     {!useSameHours && (
-                      <div className="flex gap-4">
-                        <div>
+                      <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <div className="flex-1 sm:flex-none">
                           <label className="text-sm text-gray-600">Start</label>
                           <input
                             type="time"
                             required
-                            className="block w-36 mt-1 border border-gray-300 rounded-md p-2"
+                            className="block w-full sm:w-36 mt-1 border border-gray-300 rounded-md p-2"
                             {...register(`days.${i}.startTime`)}
                             defaultValue="09:00"
                           />
                         </div>
-                        <div>
+                        <div className="flex-1 sm:flex-none">
                           <label className="text-sm text-gray-600">End</label>
                           <input
                             type="time"
                             required
-                            className="block w-36 mt-1 border border-gray-300 rounded-md p-2"
+                            className="block w-full sm:w-36 mt-1 border border-gray-300 rounded-md p-2"
                             {...register(`days.${i}.endTime`)}
                             defaultValue="17:00"
                           />
@@ -410,11 +429,12 @@ export default function SetAvail() {
                 ))}
               </div>
 
+              {/* Submit */}
               <div className="pt-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+                  className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
                 >
                   {isSubmitting ? "Saving..." : "Save / Update"}
                 </button>

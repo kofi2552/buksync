@@ -93,6 +93,10 @@ export default function Layout() {
     await signOut();
   };
 
+  const handleGetHelp = () => {
+    window.open("https://t.me/get_free_apps", "_blank");
+  };
+
   return (
     <div className="layout flex flex-col md:flex-row md:h-screen">
       {/* Desktop sidebar */}
@@ -303,7 +307,7 @@ export default function Layout() {
                   transition={{ duration: 0.2 }}
                   className="absolute right-0 mt-72 w-[180px] bg-white border rounded-xl shadow-lg p-3 z-50"
                 >
-                  <div className="flex flex-col items-center text-center py-4">
+                  <div className="flex flex-col items-center text-center px-6 py-4">
                     <UserCircle
                       size={60}
                       strokeWidth={1.5}
@@ -315,12 +319,22 @@ export default function Layout() {
                     <p className="text-xs text-gray-500 mb-4">
                       {user ? user.email : "john@example.com"}
                     </p>
-                    <button
-                      onClick={handleLogout}
-                      className="mt-2 px-6 py-2 cursor-pointer text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full transition"
-                    >
-                      Logout
-                    </button>
+
+                    {/* Buttons */}
+                    <div className="flex flex-col gap-2 w-full max-w-[200px]">
+                      <button
+                        onClick={handleGetHelp} // <- you'll need to create this handler
+                        className="px-6 py-2 cursor-pointer text-sm font-medium text-blue-600 border border-blue-600 hover:bg-blue-50 rounded-full transition"
+                      >
+                        Get Help
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="px-6 py-2 cursor-pointer text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full transition"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}

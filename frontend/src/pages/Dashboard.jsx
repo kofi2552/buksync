@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import bookingApi from "../utils/bookingApi";
 import { DateTime } from "luxon";
+import student from "../assets/buksync-img.png";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -45,7 +46,7 @@ export default function Dashboard() {
         const bookingTypes = typesRes.data;
         const stats = statsRes.data;
 
-        console.log("Bookings data:", bookings);
+        // console.log("Bookings data:", bookings);
 
         const startOfToday = DateTime.local().startOf("day").toISODate();
         const endOfToday = DateTime.local().endOf("day").toISODate();
@@ -145,15 +146,24 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
+      <div className="mb-6">
         <div>
           <h1 className="text-xl md:text-3xl font-semibold capitalize text-neutral-900">
             {user ? `Hi, ${user.full_name}` : "Dashboard"}
           </h1>
           <p className="text-neutral-600 mt-1">
-            Welcome to your BookSync dashboard
+            Welcome to your BukSync dashboard
           </p>
         </div>
+      </div>
+
+      <div className="block sm:hidden">
+        <img
+          src={student}
+          alt="buksync official logo"
+          width="100%"
+          className="mx-auto"
+        />
       </div>
 
       {/* Stats */}
@@ -229,50 +239,55 @@ export default function Dashboard() {
             ) : upcomingBookings.length > 0 ? (
               <div className="space-y-4">
                 {upcomingBookings.map((booking) => (
-                  // Check if bookingType is defined before accessing its properties
                   <div
                     key={booking._id}
-                    className="flex items-center cursor-pointer p-4 rounded-lg border bord hover:border-primary-200 hover:bg-primary-50 transition-all"
+                    className="flex items-start sm:items-center cursor-pointer p-4 rounded-lg border hover:border-primary-300 hover:bg-primary-50 transition-all duration-200 ease-in-out"
                     onClick={() => (window.location.href = "/calendar")}
                   >
+                    {/* Colored line */}
                     <div
-                      className="w-3 h-12 rounded-full mr-4"
+                      className="w-2 h-16 rounded-full mr-4 shrink-0"
                       style={{
                         backgroundColor:
-                          booking.bookingType?.color || "#0071e3", // fixed field
+                          booking.bookingType?.color || "#0071e3",
                       }}
                     ></div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-neutral-900">
-                        {booking.client_name}
-                      </h3>
-                      <div className="flex md:items-center flex-col md:flex-row">
-                        <p className="text-sm text-neutral-600">
-                          {booking.bookingType?.name || "Booking"}{" "}
-                        </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
+                      {/* Left Side */}
+                      <div className="flex flex-col flex-1">
+                        <h3 className="font-semibold text-neutral-900 text-lg leading-snug">
+                          {booking.client_name}
+                        </h3>
 
-                        <span
-                          className={`md:ml-3 w-[80px] mt-2 text-center inline-block px-2 py-1 text-xs rounded-full ${
-                            booking?.status === "confirmed"
-                              ? "bg-success-100 text-success-700"
-                              : "bg-neutral-100 text-neutral-600"
-                          }`}
-                        >
-                          {booking?.status === "confirmed"
-                            ? "Confirmed"
-                            : booking?.status === "pending"
-                            ? "Pending"
-                            : "Cancelled"}
-                        </span>
+                        <div className="flex flex-col md:flex-row md:items-center mt-1 text-sm text-neutral-600 gap-2">
+                          <p>{booking.bookingType?.name || "Booking"}</p>
+
+                          <span
+                            className={`w-fit inline-block px-3 py-1 text-xs rounded-full ${
+                              booking?.status === "confirmed"
+                                ? "bg-success-100 text-success-700"
+                                : booking?.status === "pending"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-600"
+                            }`}
+                          >
+                            {booking?.status === "confirmed"
+                              ? "Confirmed"
+                              : booking?.status === "pending"
+                              ? "Pending"
+                              : "Cancelled"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium">
-                        {formatBookingDate(booking.booked_time)}{" "}
-                        {/* fixed field */}
-                      </div>
-                      <div className="text-xs text-neutral-500">
-                        {booking.bookingType?.duration} min {/* fixed field */}
+
+                      {/* Right Side */}
+                      <div className="text-right flex-shrink-0">
+                        <div className="text-sm font-medium text-neutral-800">
+                          {formatBookingDate(booking.booked_time)}
+                        </div>
+                        <div className="text-xs text-neutral-500">
+                          {booking.bookingType?.duration} min
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -353,26 +368,31 @@ export default function Dashboard() {
                 {bookingTypes.slice(0, 4).map((type) => (
                   <div
                     key={type.id}
-                    className="flex items-center p-3 rounded-lg border border-neutral-200 hover:border-primary-200 hover:bg-primary-50 transition-all"
+                    className="flex items-start sm:items-center p-3 rounded-lg border border-neutral-200 hover:border-primary-200 hover:bg-primary-50 transition-all"
                   >
                     <div
-                      className="w-3 h-10 rounded-full mr-3"
+                      className="w-2 h-12 rounded-full mr-3"
                       style={{ backgroundColor: type.color }}
                     ></div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-neutral-900">
-                        {type.name}
-                      </h3>
-                      <p className="text-xs text-neutral-500">
-                        {type.duration} minutes
-                      </p>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
+                      <div className="flex-1 text-left">
+                        <h3 className="font-medium text-neutral-900 text-base">
+                          {type.name}
+                        </h3>
+                        <p className="text-xs text-neutral-500">
+                          {type.duration} minutes
+                        </p>
+                      </div>
+
+                      {/* Copy link */}
+                      <span
+                        onClick={() => copyBookingLink(type._id)}
+                        className="text-xs px-3 py-1 cursor-pointer rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors whitespace-nowrap text-center sm:text-left"
+                      >
+                        Copy Link
+                      </span>
                     </div>
-                    <span
-                      onClick={() => copyBookingLink(type._id)}
-                      className="text-xs px-3 py-1 cursor-pointer rounded-full bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors"
-                    >
-                      Copy Link
-                    </span>
                   </div>
                 ))}
 

@@ -171,7 +171,7 @@ export default function BookingTypes() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-start sm:items-center mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-neutral-900">
             Booking Types
@@ -183,11 +183,11 @@ export default function BookingTypes() {
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="btn btn-primary flex items-center"
+          className="block btn btn-primary flex items-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-1"
+            className="h-5 w-5 mr-0 sm:mr-1"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -197,7 +197,7 @@ export default function BookingTypes() {
               clipRule="evenodd"
             />
           </svg>
-          Create Type
+          <span className="hidden sm:inline">Create Type</span>
         </button>
       </div>
 

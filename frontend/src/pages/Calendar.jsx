@@ -335,12 +335,12 @@ export default function Calendar() {
           </div>
         ) : (
           // Calendar grid
-          <div className="grid grid-cols-7 auto-rows-fr">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 auto-rows-fr">
             {calendar.map((week, weekIndex) =>
               week.map((day, dayIndex) => (
                 <div
                   key={`${weekIndex}-${dayIndex}`}
-                  className={`border-b border-r border-neutral-200 min-h-[97px] p-2 ${
+                  className={`border-b border-r border-neutral-200 min-h-[87px] p-2 ${
                     day.isCurrentMonth ? "bg-white" : "bg-neutral-50"
                   } ${isSameDay(day.date, new Date()) ? "bg-primary-50" : ""}`}
                 >
@@ -489,7 +489,7 @@ export default function Calendar() {
               </div>
             </div>
 
-            <div className="flex justify-between pt-4">
+            <div className="flex flex-col gap-3 sm:justify-between sm:flex-row pt-4">
               <button
                 onClick={() => setIsViewModalOpen(false)}
                 className="btn btn-outline"
