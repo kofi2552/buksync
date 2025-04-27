@@ -13,7 +13,6 @@ import {
   subMonths,
 } from "date-fns";
 import { motion } from "framer-motion";
-import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import bookingApi from "../utils/bookingApi";

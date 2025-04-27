@@ -22,7 +22,6 @@ import {
 } from "date-fns";
 import bookingApi from "../utils/bookingApi";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { supabase } from "../lib/supabase";
 import { generateMeetLink } from "../services/googleMeet";
 import { sendBookingConfirmation } from "../services/emailService";
 import { useAuth } from "../contexts/AuthContext";

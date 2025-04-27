@@ -3,8 +3,10 @@ import axios from "axios";
 // You can adjust this based on where you're storing the user info
 import { getUserFromStorage } from "./authHelper"; // custom function to fetch user
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+
 const bookingApi = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: `${API_BASE_URL}/api`,
   withCredentials: true,
   timeout: 25000,
 });
